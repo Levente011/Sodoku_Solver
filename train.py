@@ -1,79 +1,63 @@
-from keras.datasets import mnist
+import numpy as np
+import matplotlib.pyplot as plt
+import os
+import cv2
+import tensorflow as tf
+
+from sklearn.model_selection import KFold
+from statistics import *
 from keras.utils import to_categorical
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, Flatten
-from keras.layers import Conv2D, MaxPool2D
+from keras.layers import Dense
+from keras.layers import Flatten
 from keras.optimizers import SGD
-from keras.models import load_model
-import matplotlib.pyplot as plt
+from sklearn.metrics import accuracy_score
 
-(x_train, y_train), (x_test, y_test) = mnist.load_data()
+DATADIR = "E:\\new_sodoku\\images\\"
+CATEGORIES = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+IMG_SIZE = 128
 
-plt.imshow(x_train[0])
+x = []
+y = []
+training_data = []
 
-# input image row and column
-input_img_row = x_train[0].shape[0]
-input_img_cols = x_train[0].shape[1]
+for features,label in training_data:
+    x.append(features)
+    y.append(label)
 
-x_train = x_train.reshape(x_train.shape[0], input_img_row, input_img_cols, 1)
-x_test = x_test.reshape(x_test.shape[0], input_img_row, input_img_cols, 1)
+x = np.array(x).reshape(-1, IMG_SIZE, IMG_SIZE, 1)
+x = x.astype('float32')
+x = x / 255.0
 
-input_shape = (input_img_row, input_img_cols, 1)
+y = np.array(y)
 
-x_train = x_train.astype("float32")
-x_test = x_test.astype("float32")
+model = tf.keras.models.Sequential()
 
-# normalize the input data
-x_train = x_train / 255
-x_test = x_test / 255
+model.add(tf.keras.layers.Flatten())
+model.add(tf.keras.layers.Dense(128, activation=tf.nn.relu))
+model.add(tf.keras.layers.Dense(128, activation=tf.nn.relu))
+model.add(tf.keras.layers.Dense(10, activation=tf.nn.softmax))
 
-# one hot encoder of the labels
-y_train = to_categorical(y_train)
-y_test = to_categorical(y_test)
+model.compile(optimizer='adam',
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
 
-num_classes = y_train.shape[1]
-num_pixels = x_train.shape[1] * x_train.shape[2]
+model.fit(x, y, epochs = 5)
 
-model = Sequential()
+model.save('model.h5')
 
-model.add(Conv2D(filters=32, kernel_size=(3, 3), activation="relu", input_shape=input_shape))
+def create_training_data():
+    for category in CATEGORIES:
+        path = os.path.join(DATADIR,category)
+        class_num = CATEGORIES.index(category)
+        for img in os.listdir(path):
+            try:
+                img_array = cv2.imread(os.path.join(path,img), cv2.IMREAD_GRAYSCALE)
+                training_data.append([img_array, class_num])
+            except Exception as e:
+                pass
 
-model.add(Conv2D(filters=64, kernel_size=(3, 3), activation="relu"))
+create_training_data()
 
-model.add(MaxPool2D(pool_size=(2, 2)))
-
-model.add(Dropout(0.25))
-
-model.add(Flatten())
-
-model.add(Dense(units=128, activation="relu", ))
-
-model.add(Dropout(0.5))
-
-model.add(Dense(units=num_classes, activation="softmax", ))
-
-model.compile(optimizer=SGD(0.01), loss="categorical_crossentropy", metrics=["accuracy"])
-
-model.summary()
-
-train = model.fit(
-	x=x_train,
-	y=y_train,
-	batch_size=35,
-	epochs=10,
-	verbose=1,
-	validation_data=(x_test, y_test)
-)
-
-score = model.evaluate(x_test, y_test, verbose=0)
-print('Test loss:', score[0])
-print('Test accuracy:', score[1])
-
-model_file_path = "E:\\Sodoku\\your_model.h5"
-model.save(model_file_path)
-loaded_model = load_model(model_file_path)
-
-score = loaded_model.evaluate(x_test, y_test, verbose=0)
-print("test loss", score[0])
-print("accuracy", score[1])
-print('Code is done, so everything works fine!')
+print("***********TRAINING***********")
+print("###Images processed: " + str(len(training_data)) + " ###")
