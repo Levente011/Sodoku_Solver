@@ -24,6 +24,39 @@ from digit_recognizer import recognize_digit
 #         print(" ".join(str(num) if num != 0 else '.' for num in row))
 
 
+def detect_grid(image):
+    ret, thresh = cv2.threshold(image, 50, 255, 0)
+    contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    print("Number of contours detected:", len(contours))
+
+    max_area = 0
+    largest_rectangle = None
+    text_position = (0, 0)
+
+    for cnt in contours:
+        x, y, w, h = cv2.boundingRect(cnt)
+        area = w * h
+        approx = cv2.approxPolyDP(cnt, 0.01 * cv2.arcLength(cnt, True), True)
+        if len(approx) == 4 and area > max_area:
+            max_area = area
+            largest_rectangle = cnt
+            text_position = (x, y)
+
+    if largest_rectangle is not None:
+        x, y, w, h = cv2.boundingRect(largest_rectangle)
+        ratio = float(w) / h
+        if ratio >= 0.9 and ratio <= 1.1:
+            image = cv2.drawContours(image, [largest_rectangle], -1, (255, 0, 0), 3)
+            cv2.putText(image, 'Square', text_position, cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 2)
+        else:
+            image = cv2.drawContours(image, [largest_rectangle], -1, (255, 0, 0), 3)
+            cv2.putText(image, 'Rectangle', text_position, cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+
+    cv2.imshow("Contours", image)
+    # return image  # Optionally return the modified image if needed elsewhere
+
+
+
 def main():
     stream_url = 'https://192.168.1.65:8080/video'
     cap = cv2.VideoCapture(stream_url)
@@ -61,6 +94,7 @@ def main():
         img_gray = cv2.cvtColor(img_cropped, cv2.COLOR_BGR2GRAY)
         img_gray = cv2.resize(img_gray, (400, 400))
         cv2.imshow("Cropped", img_gray)
+        detect_grid(img_gray)
 
         result, probability = prediction(img_gray, model)
 
