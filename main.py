@@ -22,10 +22,12 @@ def print_sudoku(matrix):
         print(" ".join(str(num) if num != 0 else '.' for num in row))
 
 def main():
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(0 + cv2.CAP_DSHOW)
 
     while True:
-        ret, frame = cap.read()
+        _, frame = cap.read()
+        frame = cv2.rotate(frame, cv2.ROTATE_180)
+        frame_copy = frame.copy()
         if not ret:
             continue
 
