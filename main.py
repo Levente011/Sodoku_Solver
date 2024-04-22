@@ -65,30 +65,21 @@ def getContours(img,original_img):
             #classify(img_corners)
 
 def classify(Img):
-     
-    crop_val = 20
+    crop_val = 10
     digits_list = []
 
-    
-    
-    for i in range(0, 9):
-        for j in range(0, 9):
-            
-                
-            J = j+1
-            I = i+1
-            cell = Img[I*100 - 100 + crop_val : I*100 - crop_val , J*100 - 100 + crop_val : J*100 - crop_val]
+    for i in range(9):
+        for j in range(9):
+            J = j*100 + crop_val
+            I = i*100 + crop_val
+            cell = Img[I:I+100 - 2*crop_val, J:J+100 - 2*crop_val]
 
+            img_canny = cv2.Canny(cell, 50, 150)
+            plt.imshow(img_canny, cmap='gray')
+            plt.show()
 
-            img_canny = cv2.Canny(cell, 50, 50)
-            # plt.imshow(img_canny, cmap='gray')
-            # plt.show()
+            contours, hierachy = cv2.findContours(img_canny, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-            contours, hierachy = cv2.findContours(img_canny, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-            print(contours)
-            
-            
-            
             digit = 0
             prob = 1.0
 
@@ -96,18 +87,12 @@ def classify(Img):
                 area = cv2.contourArea(cnt)
 
                 if area > 7.5:
-
-                    peri = cv2.arcLength(cnt, True)
-                    approx = cv2.approxPolyDP(cnt, 0.02*peri, True)
-
-                    x,y,w,h = cv2.boundingRect(approx)
-
+                    x, y, w, h = cv2.boundingRect(cnt)
                     image_rect = cell[y:y+h, x:x+w]
                     image_rect = cv2.resize(image_rect, (100, 100))
 
                     image_num = img_to_array(image_rect)
-
-                    image_num = np.array(image_num).reshape(-1, 100 , 100,1)
+                    image_num = np.array(image_num).reshape(-1, 100, 100, 1)
                     image_num = image_num.astype('float32')
                     image_num = image_num / 255.0
 
@@ -115,12 +100,13 @@ def classify(Img):
                     prediction = model.predict(image_num)
                     digit = int(np.argmax(prediction))
                     prob = np.amax(prediction)
-                    plt.imshow(image_rect, cmap='gray')
-                    plt.show()
-            print("Detected: ",digit)
-            print("Probability: ",prob)
+
+            print("Detected: ", digit)
+            print("Probability: ", prob)
             digits_list.append(digit)
+
     return digits_list
+
 
 def is_valid(grid, num, coordinate):
     # Check row
