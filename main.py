@@ -110,8 +110,8 @@ def classify(Img):
             cell = Img[I:I+100 - 2*crop_val, J:J+100 - 2*crop_val]
 
             img_canny = cv2.Canny(cell, 50, 150)
-            plt.imshow(img_canny, cmap='gray')
-            plt.show()
+            # plt.imshow(img_canny, cmap='gray')
+            # plt.show()
 
             contours, hierachy = cv2.findContours(img_canny, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
