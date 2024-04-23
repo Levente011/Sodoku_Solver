@@ -1,0 +1,3 @@
+IMG_PATH=E:\\sodoku\\detected_imgs\\
+STREAM_URL=https://192.168.1.65:8080/video
+DATADROP=E://Sodoku//detected_imgs//

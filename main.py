@@ -1,9 +1,7 @@
 import cv2
 import numpy as np
-
 import matplotlib.pyplot as plt
-
-
+import configparser
 import tensorflow as tf
 from statistics import *
 from keras.utils import to_categorical
@@ -13,26 +11,29 @@ from keras.layers import Flatten
 from keras.optimizers import SGD
 from keras.preprocessing.image import img_to_array
 
-stream_url = 'https://192.168.1.65:8080/video'
-cap = cv2.VideoCapture(stream_url)
+config = configparser.ConfigParser()
+config.read('config.txt')
+
+STREAM_URL = config.get('Paths', 'STREAM_URL')
+DATADROP = config.get('Paths', 'DATADROP')
+
+cap = cv2.VideoCapture(STREAM_URL)
 
 cap.set(3, 640)
 cap.set(4, 480)
 
 def getImages(Img):
     grid   = [[0,0,9,4,0,5,0,0,3], 
-                 [0,0,0,0,0,0,6,0,9],
-                 [3,0,0,6,0,0,8,0,0],
-                 [4,7,0,9,0,1,0,0,0],
-                 [1,0,3,0,0,0,0,0,0],
-                 [8,0,6,3,4,7,9,0,5],
-                 [7,0,0,0,0,0,3,0,4],
-                 [0,4,0,0,3,0,0,9,0],
-                 [0,0,0,0,7,0,0,2,0]]
+              [0,0,0,0,0,0,6,0,9],
+              [3,0,0,6,0,0,8,0,0],
+              [4,7,0,9,0,1,0,0,0],
+              [1,0,3,0,0,0,0,0,0],
+              [8,0,6,3,4,7,9,0,5],
+              [7,0,0,0,0,0,3,0,4],
+              [0,4,0,0,3,0,0,9,0],
+              [0,0,0,0,7,0,0,2,0]]
     
-    DATADROP = "E://Sodoku//detected_imgs//"
     crop_val = 10
-    
     
     listNum = []
     for i in range(0, 9):
@@ -51,7 +52,6 @@ def getImages(Img):
                     if area > 600:
                         peri = cv2.arcLength(cnt,True)
                         approx = cv2.approxPolyDP(cnt,0.02*peri,True)
-                
                 
                 for n in range(0, 100):
                     cv2.imwrite(DATADROP + str(grid[i][j])+ "//IMG_{}.png".format((i+1)*(j+1)),cell)
@@ -142,7 +142,6 @@ def classify(Img):
 
     return digits_list
 
-
 def is_valid(grid, num, coordinate):
     # Check row
     for i in range(len(grid[0])):
@@ -184,8 +183,6 @@ def solve(grid):
 
     return False
 
-
-
 def find_empty(grid):
     for i in range(len(grid)):
         for j in range(len(grid[0])):
@@ -204,9 +201,6 @@ def save_sudoku(sudoku2d, sudoku2d_unsolved):
     for i in range(2):
         solved_cell = cv2.line(solved_cell, ((i+1)*300, 0), ((i+1)*300, 900), (255, 255, 255), 10)
         solved_cell = cv2.line(solved_cell, (0,(i+1)*300), (900, (i+1)*300), (255, 255, 255), 10)
-
-
-
 
     font = cv2.FONT_HERSHEY_SIMPLEX
     fontScale = 2
@@ -232,7 +226,6 @@ while True:
     img_copy = img.copy()
     cv2.imshow('Sudoku Solver', img_copy)
     if not grid_found:
-        # Turning the original image to canny.
         imgGray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         imgBlur = cv2.GaussianBlur(imgGray,(5,5),3)
         imgCanny = cv2.Canny(imgBlur,50,50)
@@ -258,8 +251,5 @@ while True:
     
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
-
-    
-    
-    
+   
 cv2.destroyAllWindows()

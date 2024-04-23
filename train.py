@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 import os
 import cv2
 import tensorflow as tf
+import configparser
 from tqdm import tqdm
-
 from sklearn.model_selection import KFold
 from statistics import *
 from keras.utils import to_categorical
@@ -14,7 +14,10 @@ from keras.layers import Flatten
 from keras.optimizers import SGD
 from sklearn.metrics import accuracy_score
 
-DATADIR = "E:\\sodoku\\detected_imgs\\"
+config = configparser.ConfigParser()
+config.read('config.txt')
+
+DATADIR = config.get('Paths', 'DATADROP')
 CATEGORIES = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
 
