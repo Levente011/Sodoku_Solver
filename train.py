@@ -14,7 +14,7 @@ from keras.layers import Flatten
 from keras.optimizers import SGD
 from sklearn.metrics import accuracy_score
 
-DATADIR = "E:\\sodoku\\images\\"
+DATADIR = "E:\\sodoku\\detected_imgs\\"
 CATEGORIES = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
 

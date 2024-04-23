@@ -19,6 +19,49 @@ cap = cv2.VideoCapture(stream_url)
 cap.set(3, 640)
 cap.set(4, 480)
 
+def getImages(Img):
+    grid   = [[0,0,9,4,0,5,0,0,3], 
+                 [0,0,0,0,0,0,6,0,9],
+                 [3,0,0,6,0,0,8,0,0],
+                 [4,7,0,9,0,1,0,0,0],
+                 [1,0,3,0,0,0,0,0,0],
+                 [8,0,6,3,4,7,9,0,5],
+                 [7,0,0,0,0,0,3,0,4],
+                 [0,4,0,0,3,0,0,9,0],
+                 [0,0,0,0,7,0,0,2,0]]
+    
+    DATADROP = "E://Sodoku//detected_imgs//"
+    crop_val = 10
+    
+    
+    listNum = []
+    for i in range(0, 9):
+        for j in range(0, 9):
+            if grid[i][j] not in listNum: 
+                print(grid[i][j])
+                listNum.append(grid[i][j])
+                J = j*100 + crop_val
+                I = i*100 + crop_val
+                cell = Img[I:I+100 - 2*crop_val, J:J+100 - 2*crop_val]
+                
+                contours,hierachy = cv2.findContours(cell,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
+                print(len(contours))
+                for cnt in contours:
+                    area = cv2.contourArea(cnt)
+                    if area > 600:
+                        #cv2.drawContours(original_img,cnt,-1,(0,255,0),2)
+                        #print(area)
+                        peri = cv2.arcLength(cnt,True)
+                        approx = cv2.approxPolyDP(cnt,0.02*peri,True)
+                
+                #cell = cv2.resize(cell,(100,100))
+                
+                for n in range(0, 100):
+                    # cell_write = ###### something to modify
+                    cv2.imwrite(DATADROP + str(grid[i][j])+ "//IMG_{}.png".format((i+1)*(j+1)),cell)
+
+                cv2.imwrite(DATADROP + str(grid[i][j])+ "//IMG_{}.png".format((i+1)*(j+1)),cell)
+
 def getContours(img,original_img):
     
     contours,hierachy = cv2.findContours(img,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
@@ -59,6 +102,7 @@ def getContours(img,original_img):
                         img_corners[x][y]=255
                         
             cv2.imshow('Corners',img_corners)
+            getImages(img_corners)
             
             return img_corners
             
