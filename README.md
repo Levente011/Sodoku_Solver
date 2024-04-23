@@ -1,6 +1,6 @@
 # Sudoku Solver
 
-A program képes egy kamera elé tartott sodoku rejtvényt felismerni, majd megoldani azt. A felismerést gépi látással valósítja meg, majd amennyiben megoldható a feladat a megoldott rejtvényt egy `solved.png` fájlban elmenti a gyökérkönyvtárban és megjeleníti azt a felhasználó számára.
+A program képes egy kamera elé tartott sudoku rejtvényt felismerni, majd megoldani azt. A felismerést gépi látással valósítja meg, majd amennyiben megoldható a feladat a megoldott rejtvényt egy `solved.png` fájlban elmenti a gyökérkönyvtárban és megjeleníti azt a felhasználó számára.
 
 ## Telepítés és futtatás
 
@@ -18,7 +18,7 @@ A program képes egy kamera elé tartott sodoku rejtvényt felismerni, majd mego
      ```bash
    python main.py
 
-## Meoldott sodoku
+## Meoldott sudoku
 
 <p align="center">
   <img src="https://github.com/Levente011/Sodoku_Solver/blob/main/solved.png?raw=true" width="500" height="500" alt="Megoldott Sudoku">
