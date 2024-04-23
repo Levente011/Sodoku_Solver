@@ -1,4 +1,4 @@
-import cv2 #import the library 
+import cv2
 import numpy as np
 
 import matplotlib.pyplot as plt
@@ -49,15 +49,11 @@ def getImages(Img):
                 for cnt in contours:
                     area = cv2.contourArea(cnt)
                     if area > 600:
-                        #cv2.drawContours(original_img,cnt,-1,(0,255,0),2)
-                        #print(area)
                         peri = cv2.arcLength(cnt,True)
                         approx = cv2.approxPolyDP(cnt,0.02*peri,True)
                 
-                #cell = cv2.resize(cell,(100,100))
                 
                 for n in range(0, 100):
-                    # cell_write = ###### something to modify
                     cv2.imwrite(DATADROP + str(grid[i][j])+ "//IMG_{}.png".format((i+1)*(j+1)),cell)
 
                 cv2.imwrite(DATADROP + str(grid[i][j])+ "//IMG_{}.png".format((i+1)*(j+1)),cell)
@@ -71,7 +67,6 @@ def getContours(img,original_img):
        
         if area > 60000:
             cv2.drawContours(original_img,cnt,-1,(0,255,0),2)
-            #print(area)
             
             peri = cv2.arcLength(cnt,True)
             approx = cv2.approxPolyDP(cnt,0.02*peri,True)
@@ -93,7 +88,6 @@ def getContours(img,original_img):
             img_perspective = cv2.warpPerspective(original_img,matrix,(width,height))
             img_corners = cv2.cvtColor(img_perspective,cv2.COLOR_BGR2GRAY)
             
-            # Turn into a binary image
             for x in range(0, 900):
                 for y in range(0, 900):
                     if img_corners[x][y]<100:
@@ -102,11 +96,8 @@ def getContours(img,original_img):
                         img_corners[x][y]=255
                         
             cv2.imshow('Corners',img_corners)
-            getImages(img_corners)
             
             return img_corners
-            
-            #classify(img_corners)
 
 def classify(Img):
     crop_val = 10
@@ -206,11 +197,10 @@ def find_empty(grid):
 def save_sudoku(sudoku2d, sudoku2d_unsolved):
     
     solved_cell = np.ones((900, 900, 3))
-    # Draw the sublines
     for i in range(8):
         solved_cell = cv2.line(solved_cell, ((i+1)*100, 0), ((i+1)*100, 900), (255, 255, 255), 5)
         solved_cell = cv2.line(solved_cell, (0,(i+1)*100), (900, (i+1)*100), (255, 255, 255), 5)
-    # Draw the lines
+
     for i in range(2):
         solved_cell = cv2.line(solved_cell, ((i+1)*300, 0), ((i+1)*300, 900), (255, 255, 255), 10)
         solved_cell = cv2.line(solved_cell, (0,(i+1)*300), (900, (i+1)*300), (255, 255, 255), 10)
@@ -262,7 +252,6 @@ while True:
     else:
         if grid_img is not None:
             try:
-                # Display the ongoing solving process
                 cv2.imshow('Sudoku Solver', grid_img)
             except Exception as e:
                 print(f"Error during grid processing: {e}")

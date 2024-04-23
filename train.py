@@ -25,7 +25,7 @@ def create_training_data():
     for category in CATEGORIES:
         path = os.path.join(DATADIR, category)
         class_num = CATEGORIES.index(category)
-        for img in tqdm(os.listdir(path), desc=f"Processing {category}"):  # Use tqdm here
+        for img in tqdm(os.listdir(path), desc=f"Processing {category}"):
             try:
                 img_array = cv2.imread(os.path.join(path, img), cv2.IMREAD_GRAYSCALE)
                 img_array = cv2.resize(img_array, (IMG_SIZE, IMG_SIZE))
@@ -37,14 +37,12 @@ def data_augmentation():
     for category in CATEGORIES:  
 
         path = os.path.join(DATADIR,category)  
-        class_num = CATEGORIES.index(category)  # get the classification
+        class_num = CATEGORIES.index(category)
 
-        for img_filename in (os.listdir(path)):  # iterate over each image per digits
+        for img_filename in (os.listdir(path)):
             try:
                 
                 img_array = cv2.imread(os.path.join(path,img_filename),cv2.IMREAD_GRAYSCALE)
-                #plt.imshow(img_array, cmap='gray')
-                #plt.show()
                 
                 img_canny = cv2.Canny(img_array, 50, 50)
                 
@@ -62,8 +60,6 @@ def data_augmentation():
                         
                         image_rect = img_array[y:y+h, x:x+w]
                         image_rect = cv2.resize(image_rect, (100, 100))
-                        #plt.imshow(image_rect, cmap='gray')
-                        #plt.show()
                         
                         kernel = np.ones((5,5), np.uint8)
                         
@@ -87,16 +83,7 @@ def data_augmentation():
                             training_data.append([img_dilation, class_num])
                             training_data.append([img_dilation2, class_num])
                             
-                            #plt.imshow(img_dilation2, cmap='gray')
-                            #plt.show()
-                            
-                        
-                        
-                        
-                
-                    
-                
-            except Exception as e:  # in the interest in keeping the output clean...
+            except Exception as e:
                 raise(e)
             
 
