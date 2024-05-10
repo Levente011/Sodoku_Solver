@@ -238,8 +238,8 @@ while True:
             sudoku2d = np.array(sudoku2d)
             sudoku2d_unsolved = sudoku2d.copy()
             print(sudoku2d_unsolved)
-            solve(sudoku2d)
-            save_sudoku(sudoku2d, sudoku2d_unsolved)
+            if(solve(sudoku2d)):
+                save_sudoku(sudoku2d, sudoku2d_unsolved)
             break
     
     else:
